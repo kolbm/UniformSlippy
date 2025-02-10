@@ -2,9 +2,9 @@ import streamlit as st
 import numpy as np
 import pandas as pd
 
-# Load the image as the title
+# Load the image as the title (fixed deprecation warning)
 image_url = "https://raw.githubusercontent.com/kolbm/UniformSlippy/refs/heads/main/Screenshot%202025-02-10%20094911.png"
-st.image(image_url, use_column_width=True)
+st.image(image_url, use_container_width=True)  # Fixed parameter
 
 def calculate_slip(static_friction, velocity, radius):
     required_friction = (velocity ** 2) / (radius * 10)  # g = 10 m/s²
