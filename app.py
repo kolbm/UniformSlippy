@@ -1,32 +1,27 @@
 import streamlit as st
 import numpy as np
-import matplotlib.pyplot as plt
-import math
+import pandas as pd
 
-# Function to calculate if the car will slip
+# Load the image as the title
+image_url = "https://raw.githubusercontent.com/kolbm/UniformSlippy/refs/heads/main/Screenshot%202025-02-10%20094911.png"
+st.image(image_url, use_column_width=True)
+
 def calculate_slip(static_friction, velocity, radius):
-    # Calculate the required coefficient of friction
     required_friction = (velocity ** 2) / (radius * 10)  # g = 10 m/s²
-
-    # Determine if the car slips
     if required_friction > static_friction:
         return "The car will slip."
     else:
         return "The car will not slip."
 
-# Function to calculate the missing variable
 def calculate_missing(static_friction, velocity, radius, missing_variable):
     if missing_variable == "Coefficient of Static Friction":
         return round((velocity ** 2) / (radius * 10), 3)
     elif missing_variable == "Velocity":
-        return round(math.sqrt(static_friction * 10 * radius), 3)
+        return round(np.sqrt(static_friction * 10 * radius), 3)
     elif missing_variable == "Radius":
         return round((velocity ** 2) / (static_friction * 10), 3)
     else:
         return "Invalid selection."
-
-# Streamlit UI
-st.title("Car Slip Calculator")
 
 st.sidebar.header("Input Parameters")
 static_friction = st.sidebar.number_input("Coefficient of Static Friction (μ)", min_value=0.0, max_value=1.0, value=0.5, step=0.01)
@@ -48,40 +43,16 @@ elif calculation_type == "Calculate a missing variable":
 
 st.write("All values should be entered in metric units (meters per second, meters).")
 
-# Graph: Required friction vs. Velocity for different radii
-st.subheader("Required Friction vs. Velocity for Different Radii")
-
+# Generate data for charts
 velocities = np.linspace(5, 50, 100)
-radii = [20, 50, 100]  # Different radii to compare
+radii = np.array([20, 50, 100])
 
-plt.figure(figsize=(6,4))
-for r in radii:
-    required_friction = (velocities ** 2) / (r * 10)
-    plt.plot(velocities, required_friction, label=f"Radius = {r} m")
+# Create data for velocity vs. required friction
+data_velocity = pd.DataFrame({f"Radius {r} m": (velocities ** 2) / (r * 10) for r in radii}, index=velocities)
+st.line_chart(data_velocity.rename_axis("Velocity (m/s)").rename("Required Friction"))
 
-plt.axhline(y=static_friction, color='r', linestyle='--', label=f"Given μ = {static_friction}")
-plt.xlabel("Velocity (m/s)")
-plt.ylabel("Required Coefficient of Friction (μ)")
-plt.title("Required Friction vs. Velocity")
-plt.legend()
-plt.grid()
-st.pyplot(plt)
-
-# Graph: Required friction vs. Radius for different velocities
-st.subheader("Required Friction vs. Radius for Different Velocities")
-
+# Create data for radius vs. required friction at different velocities
 radii = np.linspace(10, 200, 100)
-velocities = [10, 20, 30]  # Different velocities to compare
-
-plt.figure(figsize=(6,4))
-for v in velocities:
-    required_friction = (v ** 2) / (radii * 10)
-    plt.plot(radii, required_friction, label=f"Velocity = {v} m/s")
-
-plt.axhline(y=static_friction, color='r', linestyle='--', label=f"Given μ = {static_friction}")
-plt.xlabel("Radius (m)")
-plt.ylabel("Required Coefficient of Friction (μ)")
-plt.title("Required Friction vs. Radius")
-plt.legend()
-plt.grid()
-st.pyplot(plt)
+velocities_set = [10, 20, 30]
+data_radius = pd.DataFrame({f"Velocity {v} m/s": (v ** 2) / (radii * 10) for v in velocities_set}, index=radii)
+st.line_chart(data_radius.rename_axis("Radius (m)").rename("Required Friction"))
