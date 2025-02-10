@@ -26,7 +26,7 @@ def calculate_missing(static_friction, velocity, radius, missing_variable):
         return "Invalid selection."
 
 # Streamlit UI
-st.title("Car Slip Calculator with Graphs (g = 10 m/s²)")
+st.title("Car Slip Calculator")
 
 st.sidebar.header("Input Parameters")
 static_friction = st.sidebar.number_input("Coefficient of Static Friction (μ)", min_value=0.0, max_value=1.0, value=0.5, step=0.01)
