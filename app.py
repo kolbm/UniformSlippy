@@ -2,9 +2,9 @@ import streamlit as st
 import numpy as np
 import pandas as pd
 
-# Load the image as the title (fixed deprecation warning)
+# Load the image as the title (Fixed deprecation warning)
 image_url = "https://raw.githubusercontent.com/kolbm/UniformSlippy/refs/heads/main/Screenshot%202025-02-10%20094911.png"
-st.image(image_url, use_container_width=True)  # Fixed parameter
+st.image(image_url, use_container_width=True)  # Corrected parameter
 
 def calculate_slip(static_friction, velocity, radius):
     required_friction = (velocity ** 2) / (radius * 10)  # g = 10 m/s²
@@ -49,10 +49,12 @@ radii = np.array([20, 50, 100])
 
 # Create data for velocity vs. required friction
 data_velocity = pd.DataFrame({f"Radius {r} m": (velocities ** 2) / (r * 10) for r in radii}, index=velocities)
-st.line_chart(data_velocity.rename_axis("Velocity (m/s)").rename("Required Friction"))
+data_velocity.index.name = "Velocity (m/s)"  # Correct index labeling
+st.line_chart(data_velocity)
 
 # Create data for radius vs. required friction at different velocities
 radii = np.linspace(10, 200, 100)
 velocities_set = [10, 20, 30]
 data_radius = pd.DataFrame({f"Velocity {v} m/s": (v ** 2) / (radii * 10) for v in velocities_set}, index=radii)
-st.line_chart(data_radius.rename_axis("Radius (m)").rename("Required Friction"))
+data_radius.index.name = "Radius (m)"  # Correct index labeling
+st.line_chart(data_radius)
